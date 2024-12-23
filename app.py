@@ -189,7 +189,7 @@ st.html("styles.html")
 
 def sidebar():
     
-    st.image('img\EMPRESA.png',width=100,caption='Minha empresa')
+    st.image('img/EMPRESA.png',width=100,caption='Minha empresa')
    
     list_tickers =  pd.read_csv('ticker.csv')
     tickers = st.multiselect(label='Selecione ticker',options=list_tickers,placeholder='Ticker')
