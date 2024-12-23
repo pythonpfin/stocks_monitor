@@ -291,9 +291,6 @@ def main(prices):
 
 
 
-    st.dataframe(prices)
-
-
 if __name__ == "__main__":
 
     with st.sidebar:
