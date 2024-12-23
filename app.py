@@ -16,6 +16,7 @@ st.set_page_config(
 )
 
 st.title ('Meu portifolio de investimento')
+st.divider()
 
 st.html("styles.html")
 
@@ -189,8 +190,10 @@ st.html("styles.html")
 
 def sidebar():
     
-    st.image('img/EMPRESA.png',width=100,caption='Minha empresa')
-   
+    ##st.image('img/EMPRESA.png',width=100,caption='Minha empresa')
+    st.logo('img/Logo2.png',link="https://github.com/pythonpfin", icon_image='img/EMPRESA.png')
+
+  
     list_tickers =  pd.read_csv('ticker.csv')
     tickers = st.multiselect(label='Selecione ticker',options=list_tickers,placeholder='Ticker')
     tickers = [tc+'.SA' for tc in tickers]
@@ -198,12 +201,14 @@ def sidebar():
     start_date = st.date_input("De", format="DD/MM/YYYY", value=datetime(2020,1,2))
     end_date = st.date_input("Até", format="DD/MM/YYYY", value="today")
 
+    with st.sidebar.expander('Sobre'):
+        st.write('Feito com Carinho ')
+        st.markdown("- Roberto Carlos Ricci")
+        st.markdown("- Python para finanças")
+        st.markdown("- <a href='https://bit.ly/lirobertocarlosricci' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' style='border-radius: 50%; width: 40px; height: 40px;' target='_blank'> </a> ", unsafe_allow_html=True)
     if tickers:
         prices = yf.download(tickers,start=start_date,end=end_date)['Close']
-        ############prices = prices.dropna(axis=1, how='any') 
-        ##prices = prices.replace(to_replace='None', value=np.nan)
-   
-    
+
         #retirar o .SA
         prices.columns = prices.columns.str.rstrip('.SA')
         #baixar cotação indice bovespa para comparar 
