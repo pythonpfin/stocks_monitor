@@ -202,7 +202,7 @@ def sidebar():
         prices = yf.download(tickers,start=start_date,end=end_date)['Close']
         ############prices = prices.dropna(axis=1, how='any') 
         ##prices = prices.replace(to_replace='None', value=np.nan)
-   
+        st.dataframe(prices.columns)
     
         #retirar o .SA
         prices.columns = prices.columns.str.rstrip('.SA')
@@ -240,27 +240,67 @@ def main(prices):
     #retorno pegar o ultimo preco tirar 100 e dividir por 100 para ter em %
     rets = (norm_price.iloc[-1] - 100)/100
 
+    #adicionar a ultima cotação
+    df_max = prices.iloc[-1]
+    #df_max = pd.DataFrame({'Ticker':df_max.index, 'Cotacao':df_max.values})
+    ##df_max.set_index('Ticker',inplace=True)
   
-  
-    mygrid = grid(5,5,5,5,5,vertical_align="top")
-    #criar os cards
-    for t in prices.columns:
-        c = mygrid.container(border=True)
-        c.subheader(t,divider='red')
-        #definir 3 colunas
-        cA,cB,cC = c.columns(3)
-        if t == "Portifolio":
-            cA.image("img/Portifolio.png")
-        elif t == "IBOV":
-            cA.image("img/IBOV.png")
-        else:
-            cA.image(f'https://raw.githubusercontent.com/pythonpfin/icon-b3/main/icon/{t}.png', width=50)
+    #agora vamos criar um tab
 
-        cB.metric(label="retorno",value=f"{rets[t]:.0%}")
-        cC.metric(label="volatilidade",value=f"{vols[t]:.0%}")
-        #style metric carts
-        style_metric_cards(background_color='rgba(255,255,255,0)',border_radius_px = 35)
+    tab1, tab2 = st.tabs(["Grid", "Tabela"])
+
+    with tab1:
+        
+        st.write('Grid')
+        mygrid = grid(5,5,5,5,5,vertical_align="top")
+        #criar os cards
+        for t in prices.columns:
+            c = mygrid.container(border=True)
+            c.subheader(t,divider='red')
+            #definir 3 colunas
+            cA,cB,cC = c.columns(3)
+            if t == "Portifolio":
+                cA.image("img/Portifolio.svg")
+            elif t == "IBOV":
+                cA.image("img/IBOV.svg")
+            else:
+                cA.image(f'https://raw.githubusercontent.com/pythonpfin/icon-b3/main/icon/{t}.png', width=50)
+
+            cB.metric(label="retorno",value=f"{rets[t]:.0%}")
+            cC.metric(label="volatilidade",value=f"{vols[t]:.0%}")
+            #style metric carts
+            style_metric_cards(background_color='rgba(255,255,255,0)',border_radius_px = 35)
     
+    with tab2:
+        st.write('Tabela')
+
+        df = pd.DataFrame(prices.columns)
+
+        df['image'] = [f'https://raw.githubusercontent.com/pythonpfin/icon-b3/main/icon/{t}.png' for t in df['Ticker']]
+            #Adicioanar o coluna dos retorno no dataframe
+
+        df = pd.merge(df, pd.DataFrame({'Ticker':rets.index, 'return':rets.values}), on = "Ticker", how = "inner") 
+
+        #Adicioanar o coluna de volaticidade no dataframe
+        df = pd.merge(df, pd.DataFrame({'Ticker':vols.index, 'vols':vols.values}), on = "Ticker", how = "inner")
+
+        df = pd.merge(df, pd.DataFrame({'Ticker':df_max.index, 'Cotação':df_max.values}), on = "Ticker", how = "inner")  
+       
+        df["return"] = df["return"] * 100
+        df["vols"] = df["vols"] * 100
+        df.iloc[-1, df.columns.get_loc("Cotação")] = ''
+    
+        st.dataframe(df,
+                column_config={
+                    "Ticker":st.column_config.Column(width=90),
+                    "image": st.column_config.ImageColumn(width=50),
+                    "return": st.column_config.NumberColumn(format="%.2f%%"),
+                    "vols":   st.column_config.NumberColumn(format="%.2f%%"),
+                    "Cotação":   st.column_config.NumberColumn(format="%.2f")
+                 
+                },hide_index=True
+                )
+        
     c1,c2 = st.columns(2,gap="large")
 
     with c1:
