@@ -191,7 +191,7 @@ st.html("styles.html")
 def sidebar():
     
     ##st.image('img/EMPRESA.png',width=100,caption='Minha empresa')
-    st.logo('https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png',link="https://github.com/pythonpfin",size="large", icon_image='https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png')
+    st.logo('img/EMPRESA.png',link="https://github.com/pythonpfin",size="large", icon_image='img/EMPRESA.png')
 
   
     list_tickers =  pd.read_csv('ticker.csv')
